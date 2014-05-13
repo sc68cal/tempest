@@ -148,12 +148,19 @@ class BaseNetworkTest(tempest.test.BaseTestCase):
     def create_subnet(cls, network, gateway=None):
         """Wrapper utility that returns a test subnet."""
         # The cidr and mask_bits depend on the ip version.
+        kwargs = {}
         if cls._ip_version == 4:
             cidr = netaddr.IPNetwork(CONF.network.tenant_network_cidr)
             mask_bits = CONF.network.tenant_network_mask_bits
         elif cls._ip_version == 6:
             cidr = netaddr.IPNetwork(CONF.network.tenant_network_v6_cidr)
             mask_bits = CONF.network.tenant_network_v6_mask_bits
+            if CONF.network.tenant_network_v6_subnet_ipv6_address_mode != '':
+                kwargs['ipv6_ra_mode'] = CONF.network.tenant_network_v6_subnet_ipv6_address_mode
+
+            if CONF.network.tenant_network_v6_subnet_ipv6_ra_mode != '':
+                kwargs['ipv6_ra_mode'] = CONF.network.tenant_network_v6_subnet_ipv6_ra_mode
+
         # Find a cidr that is not in use yet and create a subnet with it
         for subnet_cidr in cidr.subnet(mask_bits):
             if not gateway:
@@ -163,7 +170,8 @@ class BaseNetworkTest(tempest.test.BaseTestCase):
                     network_id=network['id'],
                     cidr=str(subnet_cidr),
                     ip_version=cls._ip_version,
-                    gateway_ip=gateway)
+                    gateway_ip=gateway,
+                    **kwargs)
                 break
             except exceptions.BadRequest as e:
                 is_overlapping_cidr = 'overlaps with another subnet' in str(e)
