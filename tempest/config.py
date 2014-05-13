@@ -394,6 +394,16 @@ NetworkGroup = [
     cfg.IntOpt('tenant_network_v6_mask_bits',
                default=96,
                help="The mask bits for tenant ipv6 subnets"),
+    cfg.StrOpt('tenant_network_v6_subnet_ipv6_address_mode',
+               default='',
+               help="The ipv6_address_mode attribute that the v6"
+                    "subnet will be created with",
+               ),
+    cfg.StrOpt('tenant_network_v6_subnet_ipv6_ra_mode',
+               default='',
+               help="The ipv6_ra_mode attribute that"
+                    "the v6 subnet will be created with"
+               ),
     cfg.BoolOpt('tenant_networks_reachable',
                 default=False,
                 help="Whether tenant network connectivity should be "
